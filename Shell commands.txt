@@ -1,0 +1,85 @@
+
+>>> user1 = User.objects.create_user('Tom')   
+>>> user2 = User.objects.create_user('Jerry') 
+>>> author_1 = Author.objects.create(authorUser=user1)
+>>> author_2 = Author.objects.create(authorUser=user2)
+>>> Category.objects.create(nameCat='Politic')
+>>> Category.objects.create(nameCat='Economic')
+>>> Category.objects.create(nameCat='Fashion')  
+>>> Category.objects.create(nameCat='Science')                                           
+>>> Post.objects.create(authorPost=author_1, title='Есть ли жизнь на Марсе!?', textPost='Новые исследования обнаружили жизнь на Марсе. Только не биологическую, как надеялись, а геологическую. Но и это открытие весьма примечательно. 
+Оно означает, что планета все еще продолжает развиваться, а на ее поверхности и в глубине происходят различные химические и физические процессы.')  
+>>> Post.objects.create(authorPost=author_2, title='Курс доллара. Прогноз на 17–21 июля', textPost='Впервые с начала мая рубль завершает неделю укреплением позиций против ведущих мировых валют. По итогам пятничных торгов на Московск
+ой бирже курс доллара составил 90,06 руб./$, что на 1,2 руб. выше значений закрытия предыдущей недели. Укреплению рубля способствовало повышение цен на мировом рынке нефти, что ведет к увеличению экспортной выручки, поступающей в ст
+рану.')
+>>> Post.objects.create(authorPost=author_1, categoryType = 'NW', title='МИД РФ выходит из зерновой сделки', textPost='МИД России отзывает гарантии безопасности судов и распускает координационный центр в Стамбуле МИД России официаль
+но уведомил турецкую и украинскую стороны, а также секретариат ООН о прекращении «зерновой сделки».')
+>>> post_1 = Post.objects.get(id=1)
+>>> post_2 = Post.objects.get(id=2)  
+>>> post_3 = Post.objects.get(id=3) 
+>>> category_1 = Category.objects.get(id=1)  
+>>> category_2 = Category.objects.get(id=2) 
+>>> category_3 = Category.objects.get(id=3) 
+>>> category_4 = Category.objects.get(id=4) 
+>>> post_1.postCategory.add(category_4)
+>>> post_2.postCategory.add(category_2) 
+>>> post_3.postCategory.add(category_1) 
+>>> post_3.postCategory.add(category_2) 
+>>> Comment.objects.create(commentPost=post_1, commentUser=user2, textComment='Когда же будет миссия на марс?') 
+<Comment: Comment object (1)>
+>>> Comment.objects.create(commentPost=post_2, commentUser=user1, textComment='Да уж, за последнее время доллар сильно подорожал...') 
+<Comment: Comment object (2)>
+>>> Comment.objects.create(commentPost=post_1, commentUser=user1, textComment='Марс это же шоколадка такая))))')                      
+<Comment: Comment object (3)>
+>>> Comment.objects.create(commentPost=post_3, commentUser=user1, textComment='Это - не очень хорошая новость(...')
+<Comment: Comment object (4)>
+>>> post_1.like()
+>>> post_2.like()  
+>>> post_3.like() 
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like() 
+>>> Comment.objects.get(id=3).dislike() 
+>>> Comment.objects.get(id=4).like()    
+>>> post_2.dislike()
+>>> Comment.objects.get(id=2).like()    
+>>> Comment.objects.get(id=1).like() 
+>>> post_3.dislike()                 
+>>> post_2.dislike()                 
+>>> Comment.objects.get(id=4).like()
+>>> post_1.rating
+1
+>>> post_2.rating 
+-1
+>>> post_3.rating 
+0
+>>> Comment.objects.get(id=1).ratingComment 
+2
+>>> Comment.objects.get(id=2).ratingComment 
+2
+>>> Comment.objects.get(id=3).ratingComment 
+-1
+>>> Comment.objects.get(id=4).ratingComment
+2
+>>> author_1.ratingAuthor
+0
+>>> Author.objects.get(id=1).update_rating()
+>>> author_1.ratingAuthor    
+5
+>>> Author.objects.get(id=2).ratingAuthor 
+0
+>>> author_2.update_rating()
+>>> Author.objects.get(id=2).ratingAuthor    
+3
+>>> bigest_rating = Author.objects.order_by('-ratingAuthor')[0]                                                               
+>>> f'username лучшего пользователя - {bigest_rating.authorUser.username} с рейтингом {bigest_rating.ratingAuthor}'           
+'username лучшего пользователя - Tom с рейтингом 5'
+>>> pop_post = Post.objects.order_by('-rating')[0]                                                                                                                                                                             
+>>> f'Лучшая статья под заголовком "{pop_post.title}" под авторством {pop_post.authorPost.authorUser.username}, с рейтингом - {pop_post.rating} и датой добавления - {pop_post.datePost}. Превью статьи: {pop_post.preview()}'
+'Лучшая статья под заголовком "Есть ли жизнь на Марсе!?" под авторством Tom, с рейтингом - 1 и датой добавления - 2023-07-18 12:05:33.138428+00:00. Превью статьи: Новые исследования обнаружили жизнь на Марсе. Только не биологическую
+, как надеялись, а геологическую. Но и это открытие ве...'
+>>> Post.objects.order_by('-rating')[0].comment_set.all().values('dateComment', 'commentUser_id', 'rating', 'textComment')  
+<QuerySet [{'dateComment': datetime.datetime(2023, 7, 18, 12, 8, 17, 380425, tzinfo=datetime.timezone.utc), 'commentUser_id': 2, 'rating': 3, 'textComment': 'Когда же будет миссия на марс?'}, {'dateComment': datetime.datetime(2023, 
+7, 18, 12, 8, 49, 82428, tzinfo=datetime.timezone.utc), 'commentUser_id': 1, 'rating': -1, 'textComment': 'Марс это же шоколадка такая))))'}]>
+
+
+
